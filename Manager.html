@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- FONT DECLARATIONS (UPDATE URLS) --- */
+    @font-face {
+      font-family: 'ChunkFiveEx';
+      /* IMPORTANT: Replace this URL with the actual path to your font file */
+      src: url('/path/to/your/font/ChunkFiveEx.woff2') format('woff2'),
+           url('/path/to/your/font/ChunkFiveEx.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'BR Cobane';
+      /* IMPORTANT: Replace this URL with the actual path to your font file */
+      src: url('/path/to/your/font/BR-Cobane.woff2') format('woff2'),
+           url('/path/to/your/font/BR-Cobane.woff') format('woff');
+    }
+
+    /* --- General Styles --- */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #1c1e21;
+      text-align: center;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    #table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      background-color: #f7f7f7;
+      font-weight: bold;
+    }
+    .actions button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .preview-btn {
+      background-color: #007bff;
+    }
+    .purchasing-btn {
+      background-color: #ff9800;
+    }
+    .approve-btn {
+      background-color: #42b72a;
+    }
+    .disapprove-btn {
+      background-color: #fa3e3e;
+    }
+    .status-Pending {
+      font-weight: bold;
+      color: #f7b924;
+    }
+    .status-Approved {
+      font-weight: bold;
+      color: #42b72a;
+    }
+    .status-Disapproved {
+      font-weight: bold;
+      color: #fa3e3e;
+    }
+    .disapproval-reason {
+      font-style: italic;
+      color: #777;
+      white-space: normal;
+      max-width: 250px;
+    }
+    #loader {
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 650px;
+      border-radius: 12px;
+    }
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #purchasing-details {
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.8;
+      background-color: #fdfdfd;
+      border: 1px solid #eee;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    #purchasing-details div {
+       display: flex;
+    }
+    #purchasing-details strong {
+      font-weight: bold;
+      min-width: 200px;
+      display: inline-block;
+      color: #333;
+    }
+
+    /* --- Business Card Styles --- */
+    .card-preview {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      border: 1px solid #e0e0e0;
+      max-width: 600px;
+      margin: 10px auto;
+      color: #545454;
+      font-size: 14px;
+      overflow: hidden;
+    }
+    .card-main-section {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+    }
+    .card-left-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #eee;
+      padding-right: 20px;
+      flex-shrink: 0;
+    }
+    .card-logo {
+      width: 120px;
+      background-color: #f0f0f0;
+    }
+    .side-details {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+    .side-details.center-qr {
+      justify-content: center;
+    }
+    .side-details .years {
+      font-weight: 700;
+      color: #efad00;
+    }
+    .side-details .years-lg {
+      font-family: 'ChunkFiveEx', sans-serif;
+      font-size: 36.5pt;
+      line-height: 1;
+    }
+    .side-details .years-sm {
+      font-size: 0.9em;
+      letter-spacing: 1px;
+    }
+    .side-details .since {
+      font-family: 'BR Cobane', sans-serif;
+      font-size: 7.87pt;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+      color: #efad00;
+      font-weight: normal;
+    }
+    .side-details .qr-code {
+      width: 60px;
+      height: 60px;
+      background-color: #f0f0f0;
+    }
+    .card-right-col {
+      flex-grow: 1;
+      color: #545454;
+    }
+    .card-right-col .name,
+    .card-right-col .company {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 5px 0;
+    }
+    .card-right-col .position {
+      font-size: 14px;
+      font-weight: normal;
+      margin: 0 0 15px 0;
+      white-space: pre-line;
+    }
+    .card-right-col .address,
+    .contact-item {
+      font-size: 12px;
+    }
+    .card-right-col .address {
+      margin: 0 0 15px 0;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .contact-item svg {
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      fill: #545454;
+      flex-shrink: 0;
+    }
+    .card-footer {
+      text-align: right;
+      padding: 10px 20px;
+      margin: 15px 0 0;
+      border-top: 8px solid #1b449c;
+      font-size: 12px;
+      font-weight: bold;
+      color: #1b449c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Approval Dashboard</h1>
+    <div id="loader">Loading requests...</div>
+    <div id="table-container" style="display:none;">
+      <table id="requestsTable">
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Requestor</th>
+            <th>Employee</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Processed By</th>
+            <th>Reason</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('previewModal')">&times;</span>
+      <h2>Business Card Preview</h2>
+      <div class="card-preview">
+        <div class="card-main-section">
+          <div class="card-left-col">
+            <img id="modal-logo" class="card-logo" src="" alt="Company Logo">
+            <div class="side-details" id="modal-side-details">
+              <div class="years" id="modal-years">
+                <div class="years-lg">57</div>
+                <div class="years-sm">YEARS</div>
+                <div class="since">SINCE 1968</div>
+              </div>
+              <img id="modal-qr-code" class="qr-code" src="" alt="QR Code">
+            </div>
+          </div>
+          <div class="card-right-col">
+            <h3 class="name" id="modal-name"></h3>
+            <p class="position" id="modal-position"></p>
+            <p class="company" id="modal-company"></p>
+            <p class="address" id="modal-address"></p>
+            <div class="contact-details">
+              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"></path></svg><span id="modal-tel"></span></div>
+              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M17,19H7V5H17M17,3H7A2,2 0 0,0 5,5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V5A2,2 0 0,0 17,3M16,13H8V11H16V13Z"></path></svg><span id="modal-cell"></span></div>
+              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg><span id="modal-email"></span></div>
+              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A1,1 0 0,0 10,17H14A1,1 0 0,0 15,16V15L19.79,10.21C19.92,10.78 20,11.38 20,12C20,16.08 16.95,19.44 13,19.93V17H11V19.93M12.5,14H11.5V12.5H10V11.5H11.5V10H12.5V11.5H14V12.5H12.5V14M12,4.07C15.95,4.56 19,7.92 19,12C19,12.62 18.92,13.22 18.79,13.79L14,9V8A1,1 0 0,0 13,7H9A1,1 0 0,0 8,8V9L4.21,13.79C4.08,13.22 4,12.62 4,12C4,7.92 7.05,4.56 11,4.07V7H13V4.07Z"></path></svg><span id="modal-web"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">Uratex Group of Companies</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="purchasingModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('purchasingModal')">&times;</span>
+      <h2>Purchasing Preview</h2>
+      <div id="purchasing-details">
+        </div>
+    </div>
+  </div>
+
+  <script>
+    let allRequests = [];
+    let logoBase64 = '';
+    let qrCodeBase64 = '';
+    let currentManagerEmail = '';
+    let isViewOnly = false;
+
+    function showPreview(requestID) {
+      const req = allRequests.find(r => r.requestID === requestID);
+      if (!req) return;
+      document.getElementById('modal-logo').src = logoBase64;
+      document.getElementById('modal-qr-code').src = qrCodeBase64;
+      document.getElementById('modal-name').innerText = req.cardName;
+      document.getElementById('modal-position').innerText = `${req.position}\n${req.department}`;
+      document.getElementById('modal-company').innerText = req.companyName;
+      document.getElementById('modal-address').innerText = req.companyAddress;
+      let telDisplay = req.telephone || '(+63-XX) XXXX XX XX';
+      if (req.telephone && req.localNumber) telDisplay += ` loc. ${req.localNumber}`;
+      document.getElementById('modal-tel').innerText = telDisplay;
+      document.getElementById('modal-cell').innerText = req.cellphone || '(+63) XXX XXX XXXX';
+      document.getElementById('modal-email').innerText = req.email;
+      document.getElementById('modal-web').innerText = req.website;
+      const yearsEmblem = document.getElementById('modal-years');
+      const sideDetails = document.getElementById('modal-side-details');
+      yearsEmblem.style.display = req.includeYears ? 'block' : 'none';
+      sideDetails.classList.toggle('center-qr', !req.includeYears);
+      document.getElementById('previewModal').style.display = 'block';
+    }
+    
+    // Updated function with new labels
+    function showPurchasingPreview(requestID) {
+      const req = allRequests.find(r => r.requestID === requestID);
+      if (!req) return;
+
+      let telDisplay = req.telephone;
+      if (req.telephone && req.localNumber) {
+        telDisplay += ` loc. ${req.localNumber}`;
+      }
+
+      const detailsDiv = document.getElementById('purchasing-details');
+      detailsDiv.innerHTML = `
+        <div><strong>Company Name:</strong> <span>${req.companyName}</span></div>
+        <div><strong>Company Address:</strong> <span>${req.companyAddress}</span></div>
+        <div><strong>Name:</strong> <span>${req.fullName}</span></div>
+        <div><strong>Name on Card:</strong> <span>${req.cardName}</span></div>
+        <div><strong>Department:</strong> <span>${req.department}</span></div>
+        <div><strong>Position:</strong> <span>${req.position}</span></div>
+        <div><strong>Telephone #/Local #:</strong> <span>${telDisplay || 'N/A'}</span></div>
+        <div><strong>Cellphone #:</strong> <span>${req.cellphone || 'N/A'}</span></div>
+        <div><strong>Email Add:</strong> <span>${req.email}</span></div>
+        <div><strong>Website:</strong> <span>${req.website}</span></div>
+        <div><strong>With Years:</strong> <span>${req.includeYears ? 'Yes' : 'No'}</span></div>
+      `;
+      document.getElementById('purchasingModal').style.display = 'block';
+    }
+
+    function closeModal(modalId = 'previewModal') {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
+    }
+
+    function loadInitialData() {
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('table-container').style.display = 'none';
+      const dataPromises = [
+        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getLogoAsBase64()),
+        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getQrCodeAsBase64()),
+        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getManagerEmail()),
+        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getRequests()),
+        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).isViewOnlyUser())
+      ];
+      Promise.all(dataPromises)
+        .then(([logoData, qrData, emailData, requestsData, viewOnlyData]) => {
+          logoBase64 = logoData;
+          qrCodeBase64 = qrData;
+          currentManagerEmail = emailData;
+          isViewOnly = viewOnlyData;
+          allRequests = requestsData;
+          buildTable(allRequests);
+        })
+        .catch(error => {
+          console.error('Failed to load initial data:', error);
+          document.getElementById('loader').textContent = 'Error loading data. Please refresh.';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadInitialData);
+
+    function buildTable(requests) {
+      const tbody = document.querySelector('#requestsTable tbody');
+      tbody.innerHTML = '';
+      if (requests.length === 0) {
+        document.getElementById('loader').textContent = 'No requests found.';
+        return;
+      }
+      requests.slice().reverse().forEach(req => {
+        const row = tbody.insertRow();
+        row.id = `row-${req.rowNum}`;
+        row.insertCell().textContent = req.requestID;
+        row.insertCell().textContent = req.requestorName;
+        row.insertCell().textContent = req.fullName;
+        row.insertCell().textContent = req.companyName;
+        const statusCell = row.insertCell();
+        statusCell.textContent = req.status;
+        statusCell.className = 'status-' + req.status;
+        row.insertCell().textContent = req.approvedBy || 'N/A';
+        const reasonCell = row.insertCell();
+        reasonCell.textContent = req.disapprovalReason || '';
+        if (req.disapprovalReason) reasonCell.className = 'disapproval-reason';
+        const actionsCell = row.insertCell();
+        actionsCell.className = 'actions';
+        
+        if (isViewOnly) {
+          if (req.status !== 'Disapproved') {
+            const purchasingBtn = document.createElement('button');
+            purchasingBtn.textContent = 'Purchasing View';
+            purchasingBtn.className = 'purchasing-btn';
+            purchasingBtn.onclick = () => showPurchasingPreview(req.requestID);
+            actionsCell.appendChild(purchasingBtn);
+          }
+        } else {
+          const previewBtn = document.createElement('button');
+          previewBtn.textContent = 'Preview';
+          previewBtn.className = 'preview-btn';
+          previewBtn.onclick = () => showPreview(req.requestID);
+          actionsCell.appendChild(previewBtn);
+
+          const purchasingBtn = document.createElement('button');
+          purchasingBtn.textContent = 'Purchasing View';
+          purchasingBtn.className = 'purchasing-btn';
+          purchasingBtn.onclick = () => showPurchasingPreview(req.requestID);
+          actionsCell.appendChild(purchasingBtn);
+
+          if (req.status === 'Pending') {
+            const approveBtn = document.createElement('button');
+            approveBtn.textContent = 'Approve';
+            approveBtn.className = 'approve-btn';
+            approveBtn.onclick = () => updateRequestStatus(req.rowNum, 'Approved', approveBtn);
+            actionsCell.appendChild(approveBtn);
+            const disapproveBtn = document.createElement('button');
+            disapproveBtn.textContent = 'Disapprove';
+            disapproveBtn.className = 'disapprove-btn';
+            disapproveBtn.onclick = () => updateRequestStatus(req.rowNum, 'Disapproved', disapproveBtn);
+            actionsCell.appendChild(disapproveBtn);
+          }
+        }
+      });
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('table-container').style.display = 'block';
+    }
+
+    function updateRequestStatus(rowNum, newStatus, button) {
+      let reason = '';
+      if (newStatus === 'Disapproved') {
+        reason = prompt('Please provide a reason for disapproving this request:');
+        if (reason === null) return;
+        if (!reason.trim()) {
+          alert('A reason is required to disapprove a request.');
+          return;
+        }
+      }
+      const actionsCell = button.parentElement;
+      actionsCell.innerHTML = 'Processing...';
+      google.script.run
+        .withSuccessHandler(response => {
+          console.log(response);
+          loadInitialData();
+        })
+        .withFailureHandler(error => {
+          alert('An error occurred: ' + error.message);
+          loadInitialData();
+        })
+        .updateStatus(rowNum, newStatus, currentManagerEmail, reason);
+    }
+  </script>
+</body>
+</html>
