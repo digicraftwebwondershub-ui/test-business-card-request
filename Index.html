@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- FONT DECLARATIONS (UPDATE URLS) --- */
+    @font-face {
+      font-family: 'ChunkFiveEx';
+      /* IMPORTANT: Replace this URL with the actual path to your font file */
+      src: url('/path/to/your/font/ChunkFiveEx.woff2') format('woff2'),
+           url('/path/to/your/font/ChunkFiveEx.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'BR Cobane';
+      /* IMPORTANT: Replace this URL with the actual path to your font file */
+      src: url('/path/to/your/font/BR-Cobane.woff2') format('woff2'),
+           url('/path/to/your/font/BR-Cobane.woff') format('woff');
+    }
+
+    /* --- General Styles --- */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .form-container {
+      flex: 2;
+      min-width: 400px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+    .preview-container {
+      flex: 1;
+      min-width: 500px;
+    }
+    h1 {
+      color: #1c1e21;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+    h2.preview-title {
+      text-align: center;
+      color: #4b4f56;
+      font-weight: 500;
+      margin-top: 20px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #4b4f56;
+    }
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccd0d5;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background-color: #fff;
+    }
+    select:disabled {
+      background-color: #f0f2f5;
+      color: #555;
+      cursor: not-allowed;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #status {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 6px;
+      display: none;
+    }
+    .success {
+      background-color: #e9f5e9;
+      color: #4caf50;
+    }
+    .error {
+      background-color: #ffebee;
+      color: #f44336;
+    }
+    .section-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #1c1e21;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+      grid-column: 1 / -1;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .checkbox-group input {
+      width: auto;
+    }
+    /* --- Business Card Styles (REVISIONS APPLIED) --- */
+    .card-preview {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      border: 1px solid #e0e0e0;
+      max-width: 600px;
+      margin: 10px auto;
+      color: #545454;
+      font-size: 14px;
+      overflow: hidden;
+    }
+    .card-main-section {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+    }
+    .card-left-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #eee;
+      padding-right: 20px;
+      flex-shrink: 0;
+    }
+    .card-logo {
+      width: 120px;
+      background-color: #f0f0f0;
+    }
+    .side-details {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+    .side-details.center-qr {
+      justify-content: center;
+    }
+    .side-details .years {
+      font-weight: 700;
+      color: #efad00;
+    }
+    .side-details .years-lg {
+      font-family: 'ChunkFiveEx', sans-serif;
+      font-size: 36.5pt;
+      line-height: 1;
+    }
+    .side-details .years-sm {
+      font-size: 0.9em;
+      letter-spacing: 1px;
+    }
+    .side-details .since {
+      font-family: 'BR Cobane', sans-serif;
+      font-size: 7.87pt;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+      color: #efad00;
+      font-weight: normal;
+    }
+    .side-details .qr-code {
+      width: 60px;
+      height: 60px;
+      background-color: #f0f0f0;
+    }
+    .card-right-col {
+      flex-grow: 1;
+      color: #545454;
+    }
+    .card-right-col .name,
+    .card-right-col .company {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 5px 0;
+    }
+    .card-right-col .position {
+      font-size: 14px;
+      font-weight: normal;
+      margin: 0 0 15px 0;
+      white-space: pre-line;
+    }
+    .card-right-col .address,
+    .contact-item {
+      font-size: 12px;
+    }
+    .card-right-col .address {
+      margin: 0 0 15px 0;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .contact-item svg {
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      fill: #545454;
+      flex-shrink: 0;
+    }
+    .card-footer {
+      text-align: right;
+      padding: 10px 20px;
+      margin: 15px 0 0;
+      border-top: 8px solid #1b449c;
+      font-size: 12px;
+      font-weight: bold;
+      color: #1b449c;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="form-container">
+      <h1>Business Card Request Form</h1>
+      <form id="requestForm">
+        <div class="form-grid">
+          <div class="section-title">Your Information (Requestor)</div>
+          <div class="form-group">
+            <label for="requestorName">Your Full Name</label>
+            <input type="text" id="requestorName" name="requestorName" required>
+          </div>
+          <div class="form-group">
+            <label for="requestorEmail">Your Email</label>
+            <input type="email" id="requestorEmail" name="requestorEmail" required>
+          </div>
+
+          <div class="section-title">Details for the Business Card</div>
+          <div class="form-group">
+            <label for="cardName">Name on Card</label>
+            <input type="text" id="cardName" name="cardName" required onkeyup="updatePreview(); syncFullName();">
+          </div>
+          <div class="form-group">
+            <label for="position">Position / Title</label>
+            <input type="text" id="position" name="position" required onkeyup="updatePreview()">
+          </div>
+          <div class="form-group full-width">
+            <label for="fullName">Employee's Full Name (for records)</label>
+            <input type="text" id="fullName" name="fullName" required>
+          </div>
+          <div class="form-group">
+            <label for="department">Business Unit / Department</label>
+            <input type="text" id="department" name="department" required onkeyup="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label for="email">Employee's Email</label>
+            <input type="email" id="email" name="email" required onkeyup="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label for="telephone">Telephone #</label>
+            <input type="tel" id="telephone" name="telephone" placeholder="(+63-XX) XXXX XX XX" onkeyup="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label for="localNumber">Local # (Optional)</label>
+            <input type="text" id="localNumber" name="localNumber" placeholder="e.g., 123" onkeyup="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label for="cellphone">Cellphone #</label>
+            <input type="tel" id="cellphone" name="cellphone" placeholder="(+63) XXX XXX XXXX" onkeyup="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" value="www.uratex.com.ph" onkeyup="updatePreview()">
+          </div>
+
+          <div class="section-title">Company Information</div>
+          <div class="form-group full-width">
+            <label for="companyName">Company Name</label>
+            <select id="companyName" name="companyName" required onchange="handleCompanyChange(this.value)"></select>
+          </div>
+          <div class="form-group full-width">
+            <label for="companyAddress">Company Address</label>
+            <select id="companyAddress" name="companyAddress" required onchange="updatePreview()" disabled></select>
+          </div>
+          <div class="form-group full-width checkbox-group">
+            <input type="checkbox" id="includeYears" name="includeYears" onchange="updatePreview()">
+            <label for="includeYears">Include "Years" Emblem</label>
+          </div>
+        </div>
+        <button type="submit">Submit Request</button>
+      </form>
+      <div id="status"></div>
+    </div>
+    <div class="preview-container">
+      <h2 class="preview-title">Sample Preview of the Business Card</h2>
+      <div class="card-preview" id="live-preview">
+        <div class="card-main-section">
+          <div class="card-left-col">
+            <img id="company-logo" class="card-logo" src="" alt="Company Logo">
+            <div class="side-details">
+              <div class="years">
+                <div class="years-lg">57</div>
+                <div class="years-sm">YEARS</div>
+                <div class="since">SINCE 1968</div>
+              </div>
+              <img id="qr-code-img" class="qr-code" src="" alt="QR Code">
+            </div>
+          </div>
+          <div class="card-right-col">
+            <h3 class="name" id="preview-name"></h3>
+            <p class="position" id="preview-position"></p>
+            <p class="company" id="preview-company"></p>
+            <p class="address" id="preview-address"></p>
+            <div class="contact-details">
+              <div class="contact-item">
+                <svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"></path></svg>
+                <span id="preview-tel"></span>
+              </div>
+              <div class="contact-item">
+                <svg viewBox="0 0 24 24"><path d="M17,19H7V5H17M17,3H7A2,2 0 0,0 5,5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V5A2,2 0 0,0 17,3M16,13H8V11H16V13Z"></path></svg>
+                <span id="preview-cell"></span>
+              </div>
+              <div class="contact-item">
+                <svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg>
+                <span id="preview-email"></span>
+              </div>
+              <div class="contact-item">
+                <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A1,1 0 0,0 10,17H14A1,1 0 0,0 15,16V15L19.79,10.21C19.92,10.78 20,11.38 20,12C20,16.08 16.95,19.44 13,19.93V17H11V19.93M12.5,14H11.5V12.5H10V11.5H11.5V10H12.5V11.5H14V12.5H12.5V14M12,4.07C15.95,4.56 19,7.92 19,12C19,12.62 18.92,13.22 18.79,13.79L14,9V8A1,1 0 0,0 13,7H9A1,1 0 0,0 8,8V9L4.21,13.79C4.08,13.22 4,12.62 4,12C4,7.92 7.05,4.56 11,4.07V7H13V4.07Z"></path></svg>
+                <span id="preview-web"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">Uratex Group of Companies</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Script content is unchanged...
+    function syncFullName() {
+      document.getElementById('fullName').value = document.getElementById('cardName').value;
+    }
+
+    function updatePreview() {
+      document.getElementById('preview-name').innerText = document.getElementById('cardName').value || 'Maria Clara P. Dela Cruz';
+      document.getElementById('preview-position').innerText = (document.getElementById('position').value || 'Director') + '\n' + (document.getElementById('department').value || 'Corporate HROD');
+      document.getElementById('preview-company').innerText = document.getElementById('companyName').value;
+      document.getElementById('preview-address').innerText = document.getElementById('companyAddress').value;
+      const tel = document.getElementById('telephone').value;
+      const local = document.getElementById('localNumber').value;
+      let telDisplay = tel || '(+63-XX) XXXX XX XX';
+      if (tel && local) telDisplay += ` loc. ${local}`;
+      document.getElementById('preview-tel').innerText = telDisplay;
+      document.getElementById('preview-cell').innerText = document.getElementById('cellphone').value || '(+63) XXX XXX XXXX';
+      document.getElementById('preview-email').innerText = document.getElementById('email').value || 'mariaclara.delacruz@uratex.com.ph';
+      document.getElementById('preview-web').innerText = document.getElementById('website').value || 'www.uratex.com.ph';
+      const includeYears = document.getElementById('includeYears').checked;
+      const yearsEmblem = document.querySelector('.card-preview .years');
+      const sideDetails = document.querySelector('.card-preview .side-details');
+      yearsEmblem.style.display = includeYears ? 'block' : 'none';
+      sideDetails.classList.toggle('center-qr', !includeYears);
+    }
+
+    function populateCompanyDropdown(names) {
+      const dropdown = document.getElementById('companyName');
+      dropdown.innerHTML = '<option value="" disabled selected>Select a Company</option>';
+      names.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        dropdown.appendChild(option);
+      });
+    }
+
+    function handleCompanyChange(companyName) {
+      const addressDropdown = document.getElementById('companyAddress');
+      addressDropdown.disabled = true;
+      addressDropdown.innerHTML = '<option>Loading addresses...</option>';
+      google.script.run.withSuccessHandler(populateAddressDropdown).getAddressesForCompany(companyName);
+      updatePreview();
+    }
+
+    function populateAddressDropdown(addresses) {
+      const addressDropdown = document.getElementById('companyAddress');
+      addressDropdown.innerHTML = '';
+      if (addresses.length > 0) {
+        addresses.forEach(address => {
+          const option = document.createElement('option');
+          option.value = `${address} Philippines`;
+          option.textContent = `${address} Philippines`;
+          addressDropdown.appendChild(option);
+        });
+        addressDropdown.disabled = false;
+      } else {
+        addressDropdown.innerHTML = '<option value="" disabled>No addresses found</option>';
+      }
+      updatePreview();
+    }
+
+    function loadInitialData() {
+      google.script.run.withSuccessHandler(populateCompanyDropdown).getCompanyList();
+      google.script.run.withSuccessHandler(base64 => document.getElementById('company-logo').src = base64).getLogoAsBase64();
+      google.script.run.withSuccessHandler(base64 => document.getElementById('qr-code-img').src = base64).getQrCodeAsBase64();
+      updatePreview();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadInitialData);
+
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const telInput = document.getElementById('telephone');
+      const cellInput = document.getElementById('cellphone');
+      const telPattern = /^\(\+63-\d{2}\) \d{4} \d{2} \d{2}$/;
+      const cellPattern = /^\(\+63\) \d{3} \d{3} \d{4}$/;
+      let errors = [];
+      telInput.style.borderColor = '#ccd0d5';
+      cellInput.style.borderColor = '#ccd0d5';
+      if (telInput.value.trim() !== '' && !telPattern.test(telInput.value)) {
+        errors.push('Telephone format incorrect. Use: (+63-XX) XXXX XX XX');
+        telInput.style.borderColor = 'red';
+      }
+      if (cellInput.value.trim() !== '' && !cellPattern.test(cellInput.value)) {
+        errors.push('Cellphone format incorrect. Use: (+63) XXX XXX XXXX');
+        cellInput.style.borderColor = 'red';
+      }
+      if (errors.length > 0) {
+        alert('Please correct the following errors:\n\n' + errors.join('\n'));
+        return;
+      }
+      const form = this;
+      const formData = {
+        requestorName: form.requestorName.value,
+        requestorEmail: form.requestorEmail.value,
+        fullName: form.fullName.value,
+        cardName: form.cardName.value,
+        department: form.department.value,
+        position: form.position.value,
+        telephone: form.telephone.value,
+        localNumber: form.localNumber.value,
+        cellphone: form.cellphone.value,
+        email: form.email.value,
+        website: form.website.value,
+        companyName: form.companyName.value,
+        companyAddress: form.companyAddress.value,
+        includeYears: form.includeYears.checked
+      };
+      const statusDiv = document.getElementById('status');
+      statusDiv.style.display = 'block';
+      statusDiv.className = '';
+      statusDiv.textContent = 'Submitting...';
+      google.script.run
+        .withSuccessHandler(function(response) {
+          statusDiv.textContent = response;
+          statusDiv.className = 'success';
+          form.reset();
+          document.getElementById('companyName').selectedIndex = 0;
+          const addressDropdown = document.getElementById('companyAddress');
+          addressDropdown.innerHTML = '';
+          addressDropdown.disabled = true;
+          updatePreview();
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.textContent = 'Error: ' + error.message;
+          statusDiv.className = 'error';
+        })
+        .submitRequest(formData);
+    });
+  </script>
+</body>
+</html>
