@@ -3,6 +3,8 @@
 // ===============================================================
 
 // --- CONFIGURATION ---
+// IMPORTANT: Replace this with your actual Web App deployment URL (should end in '/exec')
+const WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
 const sheetName = 'BCR';
 const companiesSheetName = 'Companies';
 const HROD_MANAGER_EMAILS = ['michelleann.delacerna@uratex.com.ph', 'corporate.training@uratex.com.ph'];
@@ -81,7 +83,7 @@ function submitRequest(formData) {
       MailApp.sendEmail({to: employeeEmail, subject: `FYI: Business Card Request Submitted For You (ID: ${requestID})`, htmlBody: emailBodyEmployee, name: SENDER_NAME});
     }
 
-    const managerUrl = ScriptApp.getService().getUrl() + '?v=manager';
+    const managerUrl = WEB_APP_URL + '?v=manager';
     const emailBodyManager = `
       <p>Gandang gising!</p>
       <p>A new business card request has been submitted by <strong>${formData.requestorName}</strong> for <strong>${formData.fullName}</strong> and requires approval.</p>
@@ -275,7 +277,7 @@ function sendPendingReminders() {
 
     const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
     const now = new Date();
-    const managerUrl = ScriptApp.getService().getUrl() + '?v=manager';
+    const managerUrl = WEB_APP_URL + '?v=manager';
     const pendingRequests = data.filter(row => {
       const status = row[16];
       const timestamp = new Date(row[0]);
