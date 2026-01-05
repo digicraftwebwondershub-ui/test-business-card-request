@@ -5,8 +5,8 @@
 // --- CONFIGURATION ---
 const sheetName = 'BCR';
 const companiesSheetName = 'Companies';
-const HROD_MANAGER_EMAILS = ['michelleann.delacerna@uratex.com.ph', 'lorenjane.diazderivera@uratex.com.ph'];
-const PURCHASING_EMAILS = ['tim.malata@uratex.com.ph', 'junecarlo.manalo@uratex.com.ph'];
+const HROD_MANAGER_EMAILS = ['michelleann.delacerna@uratex.com.ph', 'corporate.training@uratex.com.ph'];
+const PURCHASING_EMAILS = ['michelleann.delacerna@uratex.com.ph'];
 const SENDER_NAME = 'Business Card Request';
 const LOGO_FILE_ID = '1eu6GN_iqD5d2aFvVjpvj8AP9b1WKPQGF'; // <-- New Logo ID
 const QR_CODE_FILE_ID = '1xlTDHDf_syY2x4Gbo9--AWXGVjee170w'; // <-- New QR Code ID
