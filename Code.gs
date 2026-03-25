@@ -8,8 +8,9 @@ const WEB_APP_URL = 'https://script.google.com/a/macros/uratex.com.ph/s/AKfycbyb
 const SHEET_NAME = 'BCR';
 const LOGS_SHEET_NAME = 'AuditTrail';
 const COMPANIES_SHEET_NAME = 'Companies';
+const ROUTING_SHEET_NAME = 'PurchasingRouting';
 const HROD_MANAGER_EMAILS = ['michelleann.delacerna@uratex.com.ph'];
-const PURCHASING_EMAILS = ['corporate.training@uratex.com.ph'];
+const PURCHASING_EMAILS = ['corporate.training@uratex.com.ph']; // Default fallback
 const SENDER_NAME = 'Business Card Request';
 
 const LOGO_FILE_ID = '1eu6GN_iqD5d2aFvVjpvj8AP9b1WKPQGF';
@@ -42,7 +43,21 @@ function doGet(e) {
 // (These functions remain unchanged from the previous correct version)
 function getIsPurchasing() {
   const email = Session.getActiveUser().getEmail().toLowerCase();
-  return PURCHASING_EMAILS.map(e => e.toLowerCase()).includes(email);
+  const baseEmails = PURCHASING_EMAILS.map(e => e.toLowerCase());
+
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(ROUTING_SHEET_NAME);
+    if (sheet && sheet.getLastRow() > 1) {
+      const data = sheet.getRange(2, 3, sheet.getLastRow() - 1, 1).getValues().flat();
+      const sheetEmails = data.join(',').split(',').map(e => e.trim().toLowerCase()).filter(e => e !== '');
+      if (sheetEmails.includes(email)) return true;
+    }
+  } catch (e) {
+    Logger.log("Error checking purchasing permissions: " + e.message);
+  }
+
+  return baseEmails.includes(email);
 }
 function getRequestById(id) {
   const requests = getRequests();
@@ -135,6 +150,59 @@ function getAddressesForCompany(c) {
   if(s.getLastRow() < 2) return [];
   const d = s.getRange(2, 1, s.getLastRow()-1, 2).getValues();
   return d.filter(r => r[0] === c).map(r => r[1]);
+}
+
+/**
+ * FETCH PURCHASING EMAILS BASED ON COMPANY AND ADDRESS
+ */
+function getPurchasingEmails(company, address) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(ROUTING_SHEET_NAME);
+    if (!sheet || sheet.getLastRow() < 2) return PURCHASING_EMAILS;
+
+    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues();
+
+    // Clean address by removing " Philippines" if present for better matching
+    const cleanAddress = String(address).replace(/\s*Philippines$/i, '').trim().toLowerCase();
+    const cleanCompany = String(company).trim().toLowerCase();
+
+    // 1. Try Exact match (Company + Address)
+    const match = data.find(row => {
+      const sheetCompany = String(row[0]).trim().toLowerCase();
+      const sheetAddress = String(row[1]).trim().toLowerCase();
+      return sheetCompany === cleanCompany && sheetAddress === cleanAddress;
+    });
+
+    if (match && match[2]) {
+      return match[2].split(',').map(e => e.trim()).filter(e => e !== '');
+    }
+
+    // 2. Try partial address match if the sheet address is contained within the submitted address
+    const partialMatch = data.find(row => {
+      const sheetCompany = String(row[0]).trim().toLowerCase();
+      const sheetAddress = String(row[1]).trim().toLowerCase();
+      return sheetCompany === cleanCompany && sheetAddress !== '' && cleanAddress.includes(sheetAddress);
+    });
+
+    if (partialMatch && partialMatch[2]) {
+      return partialMatch[2].split(',').map(e => e.trim()).filter(e => e !== '');
+    }
+
+    // 3. Fallback search: match company only
+    const companyMatch = data.find(row =>
+      String(row[0]).trim().toLowerCase() === cleanCompany &&
+      (!row[1] || String(row[1]).trim() === '')
+    );
+
+    if (companyMatch && companyMatch[2]) {
+      return companyMatch[2].split(',').map(e => e.trim()).filter(e => e !== '');
+    }
+
+  } catch (e) {
+    Logger.log("Error in getPurchasingEmails: " + e.message);
+  }
+  return PURCHASING_EMAILS;
 }
 function getLogoAsBase64() { return getImageAsBase64(LOGO_FILE_ID); }
 function getQrCodeAsBase64() { return getImageAsBase64(QR_CODE_FILE_ID); }
@@ -291,12 +359,13 @@ function sendSubmissionEmails(requestID, formData) {
     MailApp.sendEmail({to: formData.email, subject: `FYI: Business Card Request Submitted For You (ID: ${requestID})`, htmlBody: emailBodyEmployee, name: SENDER_NAME});
   }
   notifyManagers(requestID, formData, 'New');
+  const purchasingEmails = getPurchasingEmails(formData.companyName, formData.companyAddress);
   const emailBodyPurchasing = `
     <p>Gandang gising!</p>
     <p>This is an automated notification that a new business card request for <strong>${formData.fullName}</strong> (ID: <strong>${requestID}</strong>) has been submitted and is awaiting approval.</p>
     ${detailsHtml}
     <p>Thank you.</p>`;
-  MailApp.sendEmail({to: PURCHASING_EMAILS.join(','), subject: `FYI: New Business Card Request Submitted (ID: ${requestID})`, htmlBody: emailBodyPurchasing, name: SENDER_NAME});
+  MailApp.sendEmail({to: purchasingEmails.join(','), subject: `FYI: New Business Card Request Submitted (ID: ${requestID})`, htmlBody: emailBodyPurchasing, name: SENDER_NAME});
 }
 
 function notifyManagers(requestID, formData, statusLabel, changes = []) {
@@ -355,12 +424,13 @@ function sendStatusUpdateEmail(row, status, approverEmail, reason) {
   MailApp.sendEmail({to: formData.requestorEmail, subject: subject, htmlBody: requestorEmailBody, name: SENDER_NAME});
   if (formData.requestorEmail.toLowerCase() !== formData.email.toLowerCase()) { MailApp.sendEmail({to: formData.email, subject: subject, htmlBody: requestorEmailBody, name: SENDER_NAME}); }
   const dashboardLinkHtml = `<p><a href="${managerUrl}" style="padding: 10px 15px; background-color: #1877f2; color: white; text-decoration: none; border-radius: 5px;">Open Approval Dashboard</a></p>`;
+  const purchasingEmails = getPurchasingEmails(formData.companyName, formData.companyAddress);
   if (status === 'Approved') {
     const purchasingBody = `<p>Gandang gising!</p><p>The business card request for <strong>${formData.fullName}</strong> of <strong>${formData.companyName}</strong> has been <strong>APPROVED</strong> by Corporate HROD.</p><p>The requestor, ${formData.requestorName}, will coordinate with your department for the PR and printing process.</p>${detailsHtml}${dashboardLinkHtml}<p>Thank you.</p>`;
-    MailApp.sendEmail({to: PURCHASING_EMAILS.join(','), subject: `For Printing: Business Card Request for ${formData.fullName} (ID: ${formData.requestID})`, htmlBody: purchasingBody, name: SENDER_NAME});
+    MailApp.sendEmail({to: purchasingEmails.join(','), subject: `For Printing: Business Card Request for ${formData.fullName} (ID: ${formData.requestID})`, htmlBody: purchasingBody, name: SENDER_NAME});
   } else if (status === 'Disapproved') {
     const purchasingBody = `<p>Gandang gising!</p><p>This is to inform you that the business card request for <strong>${formData.fullName}</strong> (ID: <strong>${formData.requestID}</strong>) has been <strong>DISAPPROVED</strong>.</p>${reasonHtml}${detailsHtml}${dashboardLinkHtml}<p>No further action is required.</p><p>Thank you.</p>`;
-    MailApp.sendEmail({to: PURCHASING_EMAILS.join(','), subject: `Disapproved Business Card Request (ID: ${formData.requestID})`, htmlBody: purchasingBody, name: SENDER_NAME});
+    MailApp.sendEmail({to: purchasingEmails.join(','), subject: `Disapproved Business Card Request (ID: ${formData.requestID})`, htmlBody: purchasingBody, name: SENDER_NAME});
   }
   const otherManagers = HROD_MANAGER_EMAILS.filter(email => email.toLowerCase() !== approverEmail.toLowerCase());
   if (otherManagers.length > 0) {
