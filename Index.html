@@ -314,7 +314,7 @@
       
       google.script.run.withSuccessHandler(res => {
         alert(res.message);
-        if(res.success) location.href = document.baseURI.split('?')[0]; 
+        if(res.success) location.href = res.redirectUrl;
         else { 
            btn.disabled = false; btn.textContent = 'Confirm & Submit'; 
            closeConfirmModal();

@@ -9,7 +9,7 @@ const SHEET_NAME = 'BCR';
 const LOGS_SHEET_NAME = 'AuditTrail';
 const COMPANIES_SHEET_NAME = 'Companies';
 const ROUTING_SHEET_NAME = 'PurchasingRouting';
-const HROD_MANAGER_EMAILS = ['michelleann.delacerna@uratex.com.ph'];
+const HROD_MANAGER_EMAILS = ['michelleann.delacerna@uratex.com.ph', 'corporate.training@uratex.com.ph'];
 const PURCHASING_EMAILS = ['corporate.training@uratex.com.ph']; // Default fallback
 const SENDER_NAME = 'Business Card Request';
 
@@ -59,6 +59,16 @@ function getIsPurchasing() {
 
   return baseEmails.includes(email);
 }
+function getIsManager() {
+  const email = Session.getActiveUser().getEmail().toLowerCase();
+  return HROD_MANAGER_EMAILS.map(e => e.toLowerCase()).includes(email);
+}
+function getUserRoles() {
+  return {
+    isManager: getIsManager(),
+    isPurchasing: getIsPurchasing()
+  };
+}
 function getRequestById(id) {
   const requests = getRequests();
   return requests.find(r => r.requestID === id) || null;
@@ -99,7 +109,7 @@ function getRequests() {
         companyAddress: String(get(14)),
         includeYears: Boolean(get(15)),
         requestReason: String(get(16)), 
-        status: String(get(17) || 'Pending'), 
+        status: String(get(17) || 'Pending').trim(),
         approvedBy: String(get(18)),    
         reason: String(get(19))         
       };

@@ -203,7 +203,7 @@
   </div>
 
   <script>
-    let allData = [], logoBase64 = '', qrCodeBase64 = '', isPurchasing = false;
+    let allData = [], logoBase64 = '', qrCodeBase64 = '', userRoles = { isManager: false, isPurchasing: false };
     const ICONS = {
       approve: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
       deny: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
@@ -217,9 +217,14 @@
       document.getElementById('loader').style.display = 'block';
       document.getElementById('reqTable').style.display = 'none';
 
-      google.script.run.withSuccessHandler(e => document.getElementById('userEmailDisplay').textContent = e).getManagerEmail();
-      google.script.run.withSuccessHandler(flag => {
-         isPurchasing = flag; 
+      google.script.run.withSuccessHandler(e => {
+        document.getElementById('userEmailDisplay').textContent = e;
+        console.log("Current User: " + e);
+      }).getManagerEmail();
+
+      google.script.run.withSuccessHandler(roles => {
+         userRoles = roles;
+         console.log("User Roles: ", roles);
          google.script.run.withSuccessHandler(data => {
             allData = data;
             calculateStats();
@@ -227,7 +232,7 @@
             document.getElementById('loader').style.display = 'none';
             document.getElementById('reqTable').style.display = 'table';
          }).getRequests();
-      }).getIsPurchasing();
+      }).getUserRoles();
 
       google.script.run.withSuccessHandler(d => logoBase64=d).getLogoAsBase64();
       google.script.run.withSuccessHandler(d => qrCodeBase64=d).getQrCodeAsBase64();
@@ -297,7 +302,7 @@
            <button class="btn-icon" style="color:#ff9800" onclick="showPurchasingPreview('${row.requestID}')">${ICONS.purchasing}<span class="tooltip">Purchasing View</span></button>
         `;
 
-        if (!isPurchasing && (row.status === 'Pending' || row.status === 'Resubmitted')) {
+        if (userRoles.isManager && (row.status === 'Pending' || row.status === 'Resubmitted')) {
            actionsHtml += `
              <div style="width:1px; background:var(--border); margin:0 5px;"></div>
              <button class="btn-icon" style="color:green;" onclick="openActionModal(${row.rowNum}, 'Approved')">${ICONS.approve}<span class="tooltip">Approve</span></button>
