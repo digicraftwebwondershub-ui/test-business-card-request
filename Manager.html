@@ -2,340 +2,365 @@
 <html>
 <head>
   <base target="_top">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* --- FONT DECLARATIONS (UPDATE URLS) --- */
-    @font-face {
-      font-family: 'ChunkFiveEx';
-      /* IMPORTANT: Replace this URL with the actual path to your font file */
-      src: url('/path/to/your/font/ChunkFiveEx.woff2') format('woff2'),
-           url('/path/to/your/font/ChunkFiveEx.woff') format('woff');
-    }
-    @font-face {
-      font-family: 'BR Cobane';
-      /* IMPORTANT: Replace this URL with the actual path to your font file */
-      src: url('/path/to/your/font/BR-Cobane.woff2') format('woff2'),
-           url('/path/to/your/font/BR-Cobane.woff') format('woff');
-    }
-
-    /* --- General Styles --- */
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f0f2f5;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      color: #1c1e21;
-      text-align: center;
-    }
-    h2 {
-      margin-top: 0;
-    }
-    #table-container {
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th,
-    td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: left;
-      white-space: nowrap;
-    }
-    th {
-      background-color: #f7f7f7;
-      font-weight: bold;
-    }
-    .actions button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 4px;
-      color: white;
-      cursor: pointer;
-      margin-right: 5px;
-    }
-    .preview-btn {
-      background-color: #007bff;
-    }
-    .purchasing-btn {
-      background-color: #ff9800;
-    }
-    .approve-btn {
-      background-color: #42b72a;
-    }
-    .disapprove-btn {
-      background-color: #fa3e3e;
-    }
-    .status-Pending {
-      font-weight: bold;
-      color: #f7b924;
-    }
-    .status-Approved {
-      font-weight: bold;
-      color: #42b72a;
-    }
-    .status-Disapproved {
-      font-weight: bold;
-      color: #fa3e3e;
-    }
-    .disapproval-reason {
-      font-style: italic;
-      color: #777;
-      white-space: normal;
-      max-width: 250px;
-    }
-    #loader {
-      text-align: center;
-      padding: 20px;
-      font-size: 18px;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-    .modal-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 90%;
-      max-width: 650px;
-      border-radius: 12px;
-    }
-    .close-btn {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #purchasing-details {
-      font-family: Arial, sans-serif;
-      font-size: 11pt;
-      line-height: 1.8;
-      background-color: #fdfdfd;
-      border: 1px solid #eee;
-      padding: 15px;
-      border-radius: 5px;
-    }
-    #purchasing-details div {
-       display: flex;
-    }
-    #purchasing-details strong {
-      font-weight: bold;
-      min-width: 200px;
-      display: inline-block;
-      color: #333;
-    }
-
-    /* --- Business Card Styles --- */
-    .card-preview {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      border: 1px solid #e0e0e0;
-      max-width: 600px;
-      margin: 10px auto;
-      color: #545454;
-      font-size: 14px;
-      overflow: hidden;
-    }
-    .card-main-section {
-      display: flex;
-      padding: 20px;
-      gap: 20px;
-    }
-    .card-left-col {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-right: 1px solid #eee;
-      padding-right: 20px;
-      flex-shrink: 0;
-    }
-    .card-logo {
-      width: 120px;
-      background-color: #f0f0f0;
-    }
-    .side-details {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-align: center;
-    }
-    .side-details.center-qr {
-      justify-content: center;
-    }
-    .side-details .years {
-      font-weight: 700;
-      color: #efad00;
-    }
-    .side-details .years-lg {
-      font-family: 'ChunkFiveEx', sans-serif;
-      font-size: 36.5pt;
-      line-height: 1;
-    }
-    .side-details .years-sm {
-      font-size: 0.9em;
-      letter-spacing: 1px;
-    }
-    .side-details .since {
-      font-family: 'BR Cobane', sans-serif;
-      font-size: 7.87pt;
-      letter-spacing: 0.5px;
-      opacity: 0.8;
-      color: #efad00;
-      font-weight: normal;
-    }
-    .side-details .qr-code {
-      width: 60px;
-      height: 60px;
-      background-color: #f0f0f0;
-    }
-    .card-right-col {
-      flex-grow: 1;
-      color: #545454;
-    }
-    .card-right-col .name,
-    .card-right-col .company {
-      font-size: 14px;
-      font-weight: 700;
-      margin: 0 0 5px 0;
-    }
-    .card-right-col .position {
-      font-size: 14px;
-      font-weight: normal;
-      margin: 0 0 15px 0;
-      white-space: pre-line;
-    }
-    .card-right-col .address,
-    .contact-item {
-      font-size: 12px;
-    }
-    .card-right-col .address {
-      margin: 0 0 15px 0;
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
-    .contact-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-    }
-    .contact-item svg {
-      width: 16px;
-      height: 16px;
-      margin-right: 10px;
-      fill: #545454;
-      flex-shrink: 0;
-    }
-    .card-footer {
-      text-align: right;
-      padding: 10px 20px;
-      margin: 15px 0 0;
-      border-top: 8px solid #1b449c;
-      font-size: 12px;
-      font-weight: bold;
-      color: #1b449c;
-    }
+    @font-face { font-family: 'ChunkFiveEx'; src: url('https://db.onlinewebfonts.com/t/5b683344d930a6c0b36873998f060718.woff2') format('woff2'); }
+    @font-face { font-family: 'BR Cobane'; src: url('https://fonts.cdnfonts.com/css/br-cobane') format('woff2'); }
+    :root { --primary: #1877f2; --bg-body: #f3f4f6; --bg-card: #ffffff; --text-main: #111827; --text-sub: #6b7280; --border: #e5e7eb; --status-pending-bg: #fff7ed; --status-pending-text: #c2410c; --status-success-bg: #ecfdf5; --status-success-text: #047857; --status-error-bg: #fef2f2; --status-error-text: #b91c1c; --status-return-bg: #eff6ff; --status-return-text: #1d4ed8; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; }
+    .top-nav { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+    .brand { font-size: 1.25rem; font-weight: 700; color: var(--primary); display:flex; align-items:center; gap:10px;}
+    .user-profile { font-size: 0.875rem; color: var(--text-sub); background: #f9fafb; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); }
+    .main-container { max-width: 1400px; margin: 0 auto; padding: 30px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .stat-label { font-size: 0.875rem; color: var(--text-sub); font-weight: 500; }
+    .stat-value { font-size: 1.875rem; font-weight: 700; margin-top: 5px; color: var(--text-main); }
+    .stat-pending .stat-value { color: var(--status-pending-text); }
+    .controls-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input, .filter-select { padding: 10px 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
+    .search-input { flex: 1; min-width: 250px; }
+    .search-input:focus, .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(24,119,242,0.1); }
+    .btn-refresh { background: white; border: 1px solid var(--border); color: var(--text-main); padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .btn-refresh:hover { background: #f9fafb; border-color: #d1d5db; }
+    .table-container { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background: #f9fafb; padding: 16px 24px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-sub); border-bottom: 1px solid var(--border); }
+    td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 0.875rem; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f9fafb; }
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
+    .user-name { font-weight: 600; color: var(--text-main); }
+    .user-sub { font-size: 0.75rem; color: var(--text-sub); }
+    .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .st-Pending { background: var(--status-pending-bg); color: var(--status-pending-text); }
+    .st-Approved { background: var(--status-success-bg); color: var(--status-success-text); }
+    .st-Disapproved { background: var(--status-error-bg); color: var(--status-error-text); }
+    .st-Returned { background: var(--status-return-bg); color: var(--status-return-text); }
+    .st-Resubmitted { background: #e3f2fd; color: #1976d2; }
+    .actions-cell { display: flex; gap: 8px; }
+    .btn-icon { border: none; background: transparent; cursor: pointer; padding: 6px; border-radius: 6px; color: var(--text-sub); transition: background 0.2s; position: relative; }
+    .btn-icon:hover { background: #f3f4f6; color: var(--primary); }
+    .tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap; margin-bottom: 5px; }
+    .btn-icon:hover .tooltip { opacity: 1; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 50; align-items: center; justify-content: center; }
+    .modal-panel { background: white; width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; animation: slideUp 0.2s ease-out; }
+    .modal-header { padding: 20px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 1.1rem; }
+    .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+    .modal-footer { padding: 15px 20px; background: #f9fafb; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); }
+    textarea.reason-box { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 0.9rem; resize: vertical; min-height: 100px; }
+    .btn { padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; border: none; font-size: 0.9rem; }
+    .btn-cancel { background: white; border: 1px solid var(--border); color: var(--text-main); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-danger { background: var(--status-error-text); color: white; }
+    .btn-warning { background: #f59e0b; color: white; }
+    .btn-success { background: #10b981; color: white; }
+    .loader { text-align: center; padding: 40px; color: var(--text-sub); }
+    
+    /* ENLARGED PREVIEW CSS */
+    .preview-modal-panel { width: 850px; max-width: 95%; } 
+    .card-preview-container { display: flex; justify-content: center; padding: 40px 0; background: #f3f4f6; }
+    .card-preview-box { width: 510px; height: 280px; transform: scale(1.25); transform-origin: center center; background: #fff; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border: 1px solid #e0e0e0; color: #545454; font-family: 'Roboto', sans-serif; font-size: 14px; overflow: hidden; display: flex; flex-direction: column; }
+    .card-main-section { display: flex; padding: 20px; gap: 20px; flex: 1; }
+    .card-left-col { display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #eee; padding-right: 15px; width: 160px; flex-shrink: 0; }
+    .card-logo { width: 100%; }
+    .side-details { display: flex; align-items: center; gap: 8px; text-align: center; }
+    .side-details.center-qr { justify-content: center; height: 100%; }
+    .years { font-weight: 700; color: #efad00; text-align: center; }
+    .years-lg { font-family: 'ChunkFiveEx', sans-serif; font-size: 36.5pt; line-height: 1; }
+    .years-sm { font-size: 0.7em; letter-spacing: 1px; font-weight: bold; }
+    .since { font-family: 'BR Cobane', sans-serif; font-size: 6pt; letter-spacing: 0.5px; opacity: 0.8; color: #efad00; }
+    .qr-code { width: 50px; height: 50px; }
+    .card-right-col { flex-grow: 1; color: #545454; display: flex; flex-direction: column; }
+    .card-name { font-size: 14px; font-weight: 700; margin: 0 0 5px 0; text-transform: uppercase; color: #333; }
+    .card-position { font-size: 13px; margin: 0 0 10px 0; white-space: pre-line; color: #555; }
+    .card-company { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+    .card-address { margin: 0 0 15px 0; font-size: 11px; white-space: pre-wrap; line-height: 1.3; }
+    .contact-item { display: flex; align-items: center; margin-bottom: 3px; font-size: 11px; }
+    .contact-item svg { width: 14px; height: 14px; margin-right: 8px; fill: #545454; flex-shrink: 0; }
+    .card-footer { text-align: right; padding: 5px 20px 8px; border-top: 6px solid #1b449c; font-size: 10px; font-weight: bold; color: #1b449c; background: white; }
+    #purchasing-details { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.8; background-color: #fdfdfd; border: 1px solid #eee; padding: 20px; border-radius: 5px; }
+    #purchasing-details div { display: flex; border-bottom: 1px dashed #eee; padding: 5px 0; }
+    #purchasing-details strong { font-weight: bold; min-width: 180px; display: inline-block; color: #333; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Approval Dashboard</h1>
-    <div id="loader">Loading requests...</div>
-    <div id="table-container" style="display:none;">
-      <table id="requestsTable">
-        <thead>
-          <tr>
-            <th>Request ID</th>
-            <th>Requestor</th>
-            <th>Employee</th>
-            <th>Company</th>
-            <th>Status</th>
-            <th>Processed By</th>
-            <th>Reason</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
+
+  <nav class="top-nav">
+    <div class="brand">Business Cards</div>
+    <div class="user-profile" id="userEmailDisplay">Loading...</div>
+  </nav>
+
+  <div class="main-container">
+    <div class="stats-grid">
+      <div class="stat-card stat-pending"><div class="stat-label">Pending Approval</div><div class="stat-value" id="countPending">-</div></div>
+      <div class="stat-card"><div class="stat-label">Approved Today</div><div class="stat-value" id="countApproved">-</div></div>
+      <div class="stat-card"><div class="stat-label">Total Requests</div><div class="stat-value" id="countTotal">-</div></div>
+    </div>
+
+    <div class="controls-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by name, company, or ID..." onkeyup="filterData()">
+      
+      <select id="statusFilter" class="filter-select" onchange="filterData()">
+        <option value="All">All Statuses</option>
+        <option value="Pending" selected>Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Returned">Returned</option>
+        <option value="Disapproved">Disapproved</option>
+      </select>
+
+      <select id="sortFilter" class="filter-select" onchange="filterData()">
+        <option value="Default" selected>Default (Action Needed)</option>
+        <option value="Newest">Newest First</option>
+        <option value="Oldest">Oldest First</option>
+        <option value="NameASC">Name (A-Z)</option>
+        <option value="Company">Company</option>
+      </select>
+
+      <button onclick="loadData()" class="btn-refresh">Refresh Data</button>
+    </div>
+
+    <div class="table-container">
+      <div id="loader" class="loader">Loading requests...</div>
+      <table id="reqTable" style="display:none;">
+        <thead><tr><th>Employee</th><th>Request Info</th><th>Company</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="tableBody"></tbody>
       </table>
     </div>
   </div>
 
-  <div id="previewModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal('previewModal')">&times;</span>
-      <h2>Business Card Preview</h2>
-      <div class="card-preview">
-        <div class="card-main-section">
-          <div class="card-left-col">
-            <img id="modal-logo" class="card-logo" src="" alt="Company Logo">
-            <div class="side-details" id="modal-side-details">
-              <div class="years" id="modal-years">
-                <div class="years-lg">57</div>
-                <div class="years-sm">YEARS</div>
-                <div class="since">SINCE 1968</div>
-              </div>
-              <img id="modal-qr-code" class="qr-code" src="" alt="QR Code">
-            </div>
-          </div>
-          <div class="card-right-col">
-            <h3 class="name" id="modal-name"></h3>
-            <p class="position" id="modal-position"></p>
-            <p class="company" id="modal-company"></p>
-            <p class="address" id="modal-address"></p>
-            <div class="contact-details">
-              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"></path></svg><span id="modal-tel"></span></div>
-              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M17,19H7V5H17M17,3H7A2,2 0 0,0 5,5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V5A2,2 0 0,0 17,3M16,13H8V11H16V13Z"></path></svg><span id="modal-cell"></span></div>
-              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg><span id="modal-email"></span></div>
-              <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A1,1 0 0,0 10,17H14A1,1 0 0,0 15,16V15L19.79,10.21C19.92,10.78 20,11.38 20,12C20,16.08 16.95,19.44 13,19.93V17H11V19.93M12.5,14H11.5V12.5H10V11.5H11.5V10H12.5V11.5H14V12.5H12.5V14M12,4.07C15.95,4.56 19,7.92 19,12C19,12.62 18.92,13.22 18.79,13.79L14,9V8A1,1 0 0,0 13,7H9A1,1 0 0,0 8,8V9L4.21,13.79C4.08,13.22 4,12.62 4,12C4,7.92 7.05,4.56 11,4.07V7H13V4.07Z"></path></svg><span id="modal-web"></span></div>
-            </div>
-          </div>
-        </div>
-        <div class="card-footer">Uratex Group of Companies</div>
+  <div id="actionModal" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header" id="modalTitle">Confirm Action</div>
+      <div class="modal-body">
+        <p id="modalDesc" style="margin-top:0; color:var(--text-sub); margin-bottom:15px;"></p>
+        <textarea id="modalReason" class="reason-box" placeholder="Add a comment or reason..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('actionModal')" class="btn btn-cancel">Cancel</button>
+        <button id="modalConfirmBtn" class="btn btn-primary">Confirm</button>
       </div>
     </div>
   </div>
 
-  <div id="purchasingModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal('purchasingModal')">&times;</span>
-      <h2>Purchasing Preview</h2>
-      <div id="purchasing-details">
+  <div id="purchasingModal" class="modal-backdrop">
+    <div class="modal-panel" style="max-width:600px;">
+      <div class="modal-header">Purchasing Details</div>
+      <div class="modal-body"><div id="purchasing-details"></div></div>
+      <div class="modal-footer"><button onclick="closeModal('purchasingModal')" class="btn btn-cancel">Close</button></div>
+    </div>
+  </div>
+
+  <div id="historyModal" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header">History Log</div>
+      <div class="modal-body" style="max-height:60vh; overflow-y:auto;"><div id="historyList"></div></div>
+      <div class="modal-footer"><button onclick="closeModal('historyModal')" class="btn btn-cancel">Close</button></div>
+    </div>
+  </div>
+
+  <div id="previewModal" class="modal-backdrop">
+    <div class="modal-panel preview-modal-panel"> 
+      <div class="modal-header">Business Card Preview</div>
+      <div class="modal-body" style="padding:0;">
+        <div class="card-preview-container"> 
+          <div class="card-preview-box">
+            <div class="card-main-section">
+              <div class="card-left-col">
+                <img id="modal-logo" class="card-logo" src="">
+                <div class="side-details" id="modal-side-details">
+                  <div class="years" id="modal-years"><div class="years-lg">57</div><div class="years-sm">YEARS</div><div class="since">SINCE 1968</div></div>
+                  <img id="modal-qr-code" class="qr-code" src="">
+                </div>
+              </div>
+              <div class="card-right-col">
+                <h3 class="card-name" id="modal-name"></h3>
+                <p class="card-position" id="modal-position"></p>
+                <p class="card-company" id="modal-company"></p>
+                <p class="card-address" id="modal-address"></p>
+                <div class="contact-details">
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"></path></svg><span id="modal-tel"></span></div>
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M17,19H7V5H17M17,3H7A2,2 0 0,0 5,5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V5A2,2 0 0,0 17,3M16,13H8V11H16V13Z"></path></svg><span id="modal-cell"></span></div>
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg><span id="modal-email"></span></div>
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A1,1 0 0,0 10,17H14A1,1 0 0,0 15,16V15L19.79,10.21C19.92,10.78 20,11.38 20,12C20,16.08 16.95,19.44 13,19.93V17H11V19.93M12.5,14H11.5V12.5H10V11.5H11.5V10H12.5V11.5H14V12.5H12.5V14M12,4.07C15.95,4.56 19,7.92 19,12C19,12.62 18.92,13.22 18.79,13.79L14,9V8A1,1 0 0,0 13,7H9A1,1 0 0,0 8,8V9L4.21,13.79C4.08,13.22 4,12.62 4,12C4,7.92 7.05,4.56 11,4.07V7H13V4.07Z"></path></svg><span id="modal-web"></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">Uratex Group of Companies</div>
+          </div>
         </div>
+        
+        <div style="padding: 15px 20px; background: #fff8e1; border-top: 1px solid #eee; color: #5d4037; font-size: 13px;">
+           <strong>Reason for Request:</strong> <span id="modal-req-reason" style="font-style:italic;">Loading...</span>
+        </div>
+
+      </div>
+      <div class="modal-footer"><button onclick="closeModal('previewModal')" class="btn btn-cancel">Close</button></div>
     </div>
   </div>
 
   <script>
-    let allRequests = [];
-    let logoBase64 = '';
-    let qrCodeBase64 = '';
-    let currentManagerEmail = '';
-    let isViewOnly = false;
+    let allData = [], logoBase64 = '', qrCodeBase64 = '', isPurchasing = false;
+    const ICONS = {
+      approve: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+      deny: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+      return: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>',
+      history: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+      preview: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+      purchasing: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>'
+    };
 
-    function showPreview(requestID) {
-      const req = allRequests.find(r => r.requestID === requestID);
+    function loadData() {
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('reqTable').style.display = 'none';
+
+      google.script.run.withSuccessHandler(e => document.getElementById('userEmailDisplay').textContent = e).getManagerEmail();
+      google.script.run.withSuccessHandler(flag => {
+         isPurchasing = flag; 
+         google.script.run.withSuccessHandler(data => {
+            allData = data;
+            calculateStats();
+            filterData();
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('reqTable').style.display = 'table';
+         }).getRequests();
+      }).getIsPurchasing();
+
+      google.script.run.withSuccessHandler(d => logoBase64=d).getLogoAsBase64();
+      google.script.run.withSuccessHandler(d => qrCodeBase64=d).getQrCodeAsBase64();
+    }
+
+    function calculateStats() {
+      const pending = allData.filter(r => r.status === 'Pending').length;
+      const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const approved = allData.filter(r => r.status === 'Approved' && r.date === today).length;
+      document.getElementById('countPending').textContent = pending;
+      document.getElementById('countApproved').textContent = approved;
+      document.getElementById('countTotal').textContent = allData.length;
+    }
+
+    function filterData() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const filtered = allData.filter(row => {
+        const matchSearch = (
+          row.fullName.toLowerCase().includes(search) || 
+          row.requestID.toLowerCase().includes(search) ||
+          row.companyName.toLowerCase().includes(search)
+        );
+        const matchStatus = status === 'All' || row.status.includes(status);
+        return matchSearch && matchStatus;
+      });
+      
+      // NEW SORTING LOGIC
+      const sortMode = document.getElementById('sortFilter').value;
+      
+      filtered.sort((a, b) => {
+        if (sortMode === 'Default') {
+           // Original Logic: Resubmitted/Pending first
+           const priority = { 'Resubmitted': 1, 'Pending': 1, 'Approved': 3, 'Returned': 4, 'Disapproved': 5 };
+           const pA = priority[a.status.split(' ')[0]] || 99;
+           const pB = priority[b.status.split(' ')[0]] || 99;
+           if (pA !== pB) return pA - pB;
+           return new Date(b.date) - new Date(a.date); // Then newest
+        } else if (sortMode === 'Newest') {
+           return new Date(b.date) - new Date(a.date);
+        } else if (sortMode === 'Oldest') {
+           return new Date(a.date) - new Date(b.date);
+        } else if (sortMode === 'NameASC') {
+           return a.fullName.localeCompare(b.fullName);
+        } else if (sortMode === 'Company') {
+           return a.companyName.localeCompare(b.companyName);
+        }
+        return 0;
+      });
+
+      renderTable(filtered);
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#aaa;">No requests found.</td></tr>'; return; }
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        const initials = row.fullName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+        const stClass = 'st-' + row.status.split(' ')[0];
+        
+        let actionsHtml = `
+           <button class="btn-icon" style="color:var(--text-sub)" onclick="viewHistory('${row.requestID}')">${ICONS.history}<span class="tooltip">History</span></button>
+           <button class="btn-icon" style="color:var(--primary)" onclick="openCardPreview('${row.requestID}')">${ICONS.preview}<span class="tooltip">Card Preview</span></button>
+           <button class="btn-icon" style="color:#ff9800" onclick="showPurchasingPreview('${row.requestID}')">${ICONS.purchasing}<span class="tooltip">Purchasing View</span></button>
+        `;
+
+        if (!isPurchasing && (row.status === 'Pending' || row.status === 'Resubmitted')) {
+           actionsHtml += `
+             <div style="width:1px; background:var(--border); margin:0 5px;"></div>
+             <button class="btn-icon" style="color:green;" onclick="openActionModal(${row.rowNum}, 'Approved')">${ICONS.approve}<span class="tooltip">Approve</span></button>
+             <button class="btn-icon" style="color:orange;" onclick="openActionModal(${row.rowNum}, 'Returned for Revision')">${ICONS.return}<span class="tooltip">Return</span></button>
+             <button class="btn-icon" style="color:red;" onclick="openActionModal(${row.rowNum}, 'Disapproved')">${ICONS.deny}<span class="tooltip">Disapprove</span></button>
+           `;
+        }
+
+        tr.innerHTML = `
+          <td><div class="user-cell"><div class="avatar">${initials}</div><div class="user-info"><div class="user-name">${row.fullName}</div><div class="user-sub">${row.email}</div></div></div></td>
+          <td><div class="user-info"><div style="font-weight:500;">${row.cardName}</div><div class="user-sub">${row.position}</div><div class="user-sub" style="font-size:0.7rem; color:#9ca3af;">${row.requestID}</div></div></td>
+          <td><div style="font-size:0.875rem;">${row.companyName}</div><div class="user-sub">${row.department}</div></td>
+          <td><span class="badge ${stClass}">${row.status}</span></td>
+          <td><div class="actions-cell">${actionsHtml}</div></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStatus(rowNum, status, reason = '') {
+      const btn = document.getElementById('modalConfirmBtn');
+      if(btn) { btn.textContent = 'Processing...'; btn.disabled = true; }
+      google.script.run.withSuccessHandler(() => { closeModal('actionModal'); loadData(); }).updateStatus(rowNum, status, reason);
+    }
+
+    function openActionModal(rowNum, status) {
+      const modal = document.getElementById('actionModal');
+      const title = document.getElementById('modalTitle');
+      const desc = document.getElementById('modalDesc');
+      const confirm = document.getElementById('modalConfirmBtn');
+      const reasonBox = document.getElementById('modalReason');
+      
+      reasonBox.value = '';
+      reasonBox.style.display = 'block'; 
+      modal.style.display = 'flex';
+      
+      if (status === 'Approved') {
+        title.textContent = 'Confirm Approval';
+        desc.textContent = 'Are you sure you want to approve this request?';
+        confirm.className = 'btn btn-success'; 
+        confirm.textContent = 'Approve';
+        reasonBox.placeholder = 'Add an optional note...';
+      } else if (status === 'Disapproved') {
+        title.textContent = 'Disapprove Request'; 
+        desc.textContent = 'Reason for disapproval:';
+        confirm.className = 'btn btn-danger'; 
+        confirm.textContent = 'Disapprove';
+        reasonBox.placeholder = 'State reason here...';
+      } else if (status.includes('Returned')) {
+        title.textContent = 'Return for Revision'; 
+        desc.textContent = 'Specify what needs correction:';
+        confirm.className = 'btn btn-warning'; 
+        confirm.textContent = 'Return Request';
+        reasonBox.placeholder = 'E.g., Incorrect title, wrong phone number...';
+      } else {
+        title.textContent = 'Confirm Action'; 
+        confirm.className = 'btn btn-primary';
+      }
+      confirm.onclick = () => updateStatus(rowNum, status, reasonBox.value);
+    }
+
+    function openCardPreview(requestID) {
+      const req = allData.find(r => r.requestID === requestID);
       if (!req) return;
       document.getElementById('modal-logo').src = logoBase64;
       document.getElementById('modal-qr-code').src = qrCodeBase64;
@@ -343,29 +368,23 @@
       document.getElementById('modal-position').innerText = `${req.position}\n${req.department}`;
       document.getElementById('modal-company').innerText = req.companyName;
       document.getElementById('modal-address').innerText = req.companyAddress;
-      let telDisplay = req.telephone || '(+63-XX) XXXX XX XX';
-      if (req.telephone && req.localNumber) telDisplay += ` loc. ${req.localNumber}`;
+      let telDisplay = req.telephone || ''; if (req.telephone && req.localNumber) telDisplay += ` loc. ${req.localNumber}`;
       document.getElementById('modal-tel').innerText = telDisplay;
-      document.getElementById('modal-cell').innerText = req.cellphone || '(+63) XXX XXX XXXX';
+      document.getElementById('modal-cell').innerText = req.cellphone;
       document.getElementById('modal-email').innerText = req.email;
       document.getElementById('modal-web').innerText = req.website;
+      document.getElementById('modal-req-reason').innerText = req.requestReason || 'None provided';
       const yearsEmblem = document.getElementById('modal-years');
       const sideDetails = document.getElementById('modal-side-details');
       yearsEmblem.style.display = req.includeYears ? 'block' : 'none';
       sideDetails.classList.toggle('center-qr', !req.includeYears);
-      document.getElementById('previewModal').style.display = 'block';
+      document.getElementById('previewModal').style.display = 'flex';
     }
-    
-    // Updated function with new labels
+
     function showPurchasingPreview(requestID) {
-      const req = allRequests.find(r => r.requestID === requestID);
+      const req = allData.find(r => r.requestID === requestID);
       if (!req) return;
-
-      let telDisplay = req.telephone;
-      if (req.telephone && req.localNumber) {
-        telDisplay += ` loc. ${req.localNumber}`;
-      }
-
+      let telDisplay = req.telephone; if (req.telephone && req.localNumber) telDisplay += ` loc. ${req.localNumber}`;
       const detailsDiv = document.getElementById('purchasing-details');
       detailsDiv.innerHTML = `
         <div><strong>Company Name:</strong> <span>${req.companyName}</span></div>
@@ -374,138 +393,33 @@
         <div><strong>Name on Card:</strong> <span>${req.cardName}</span></div>
         <div><strong>Department:</strong> <span>${req.department}</span></div>
         <div><strong>Position:</strong> <span>${req.position}</span></div>
-        <div><strong>Telephone #/Local #:</strong> <span>${telDisplay || 'N/A'}</span></div>
-        <div><strong>Cellphone #:</strong> <span>${req.cellphone || 'N/A'}</span></div>
+        <div><strong>Telephone:</strong> <span>${telDisplay || 'N/A'}</span></div>
+        <div><strong>Cellphone:</strong> <span>${req.cellphone || 'N/A'}</span></div>
         <div><strong>Email Add:</strong> <span>${req.email}</span></div>
         <div><strong>Website:</strong> <span>${req.website}</span></div>
         <div><strong>With Years:</strong> <span>${req.includeYears ? 'Yes' : 'No'}</span></div>
       `;
-      document.getElementById('purchasingModal').style.display = 'block';
+      document.getElementById('purchasingModal').style.display = 'flex';
     }
 
-    function closeModal(modalId = 'previewModal') {
-      document.getElementById(modalId).style.display = 'none';
-    }
-    
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-      }
-    }
-
-    function loadInitialData() {
-      document.getElementById('loader').style.display = 'block';
-      document.getElementById('table-container').style.display = 'none';
-      const dataPromises = [
-        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getLogoAsBase64()),
-        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getQrCodeAsBase64()),
-        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getManagerEmail()),
-        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getRequests()),
-        new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).isViewOnlyUser())
-      ];
-      Promise.all(dataPromises)
-        .then(([logoData, qrData, emailData, requestsData, viewOnlyData]) => {
-          logoBase64 = logoData;
-          qrCodeBase64 = qrData;
-          currentManagerEmail = emailData;
-          isViewOnly = viewOnlyData;
-          allRequests = requestsData;
-          buildTable(allRequests);
-        })
-        .catch(error => {
-          console.error('Failed to load initial data:', error);
-          document.getElementById('loader').textContent = 'Error loading data. Please refresh.';
-        });
+    function viewHistory(id) {
+      document.getElementById('historyModal').style.display = 'flex';
+      const div = document.getElementById('historyList');
+      div.innerHTML = '<div style="padding:20px; text-align:center;">Loading logs...</div>';
+      google.script.run.withSuccessHandler(logs => {
+        if (logs.length === 0) { div.innerHTML = '<div style="padding:20px;">No history found.</div>'; return; }
+        div.innerHTML = logs.map(l => `
+          <div style="padding:10px 0; border-bottom:1px dashed #eee;">
+            <div style="font-size:0.75rem; color:#999; margin-bottom:2px;">${l.timestamp} • ${l.user}</div>
+            <div style="font-size:0.9rem;"><strong>${l.action}</strong>: <span style="color:#666;">${l.field || ''}</span> ${l.newVal ? `<br/> ➤ ${l.newVal}` : ''}</div>
+          </div>
+        `).join('');
+      }).getHistory(id);
     }
 
-    document.addEventListener('DOMContentLoaded', loadInitialData);
-
-    function buildTable(requests) {
-      const tbody = document.querySelector('#requestsTable tbody');
-      tbody.innerHTML = '';
-      if (requests.length === 0) {
-        document.getElementById('loader').textContent = 'No requests found.';
-        return;
-      }
-      requests.slice().reverse().forEach(req => {
-        const row = tbody.insertRow();
-        row.id = `row-${req.rowNum}`;
-        row.insertCell().textContent = req.requestID;
-        row.insertCell().textContent = req.requestorName;
-        row.insertCell().textContent = req.fullName;
-        row.insertCell().textContent = req.companyName;
-        const statusCell = row.insertCell();
-        statusCell.textContent = req.status;
-        statusCell.className = 'status-' + req.status;
-        row.insertCell().textContent = req.approvedBy || 'N/A';
-        const reasonCell = row.insertCell();
-        reasonCell.textContent = req.disapprovalReason || '';
-        if (req.disapprovalReason) reasonCell.className = 'disapproval-reason';
-        const actionsCell = row.insertCell();
-        actionsCell.className = 'actions';
-        
-        if (isViewOnly) {
-          if (req.status !== 'Disapproved') {
-            const purchasingBtn = document.createElement('button');
-            purchasingBtn.textContent = 'Purchasing View';
-            purchasingBtn.className = 'purchasing-btn';
-            purchasingBtn.onclick = () => showPurchasingPreview(req.requestID);
-            actionsCell.appendChild(purchasingBtn);
-          }
-        } else {
-          const previewBtn = document.createElement('button');
-          previewBtn.textContent = 'Preview';
-          previewBtn.className = 'preview-btn';
-          previewBtn.onclick = () => showPreview(req.requestID);
-          actionsCell.appendChild(previewBtn);
-
-          const purchasingBtn = document.createElement('button');
-          purchasingBtn.textContent = 'Purchasing View';
-          purchasingBtn.className = 'purchasing-btn';
-          purchasingBtn.onclick = () => showPurchasingPreview(req.requestID);
-          actionsCell.appendChild(purchasingBtn);
-
-          if (req.status === 'Pending') {
-            const approveBtn = document.createElement('button');
-            approveBtn.textContent = 'Approve';
-            approveBtn.className = 'approve-btn';
-            approveBtn.onclick = () => updateRequestStatus(req.rowNum, 'Approved', approveBtn);
-            actionsCell.appendChild(approveBtn);
-            const disapproveBtn = document.createElement('button');
-            disapproveBtn.textContent = 'Disapprove';
-            disapproveBtn.className = 'disapprove-btn';
-            disapproveBtn.onclick = () => updateRequestStatus(req.rowNum, 'Disapproved', disapproveBtn);
-            actionsCell.appendChild(disapproveBtn);
-          }
-        }
-      });
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('table-container').style.display = 'block';
-    }
-
-    function updateRequestStatus(rowNum, newStatus, button) {
-      let reason = '';
-      if (newStatus === 'Disapproved') {
-        reason = prompt('Please provide a reason for disapproving this request:');
-        if (reason === null) return;
-        if (!reason.trim()) {
-          alert('A reason is required to disapprove a request.');
-          return;
-        }
-      }
-      const actionsCell = button.parentElement;
-      actionsCell.innerHTML = 'Processing...';
-      google.script.run
-        .withSuccessHandler(response => {
-          console.log(response);
-          loadInitialData();
-        })
-        .withFailureHandler(error => {
-          alert('An error occurred: ' + error.message);
-          loadInitialData();
-        })
-        .updateStatus(rowNum, newStatus, currentManagerEmail, reason);
-    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    window.onclick = function(event) { if (event.target.classList.contains('modal-backdrop')) event.target.style.display = 'none'; }
+    document.addEventListener('DOMContentLoaded', loadData);
   </script>
 </body>
 </html>
