@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face { font-family: 'ChunkFiveEx'; src: url('https://db.onlinewebfonts.com/t/5b683344d930a6c0b36873998f060718.woff2') format('woff2'); }
+    @font-face { font-family: 'BR Cobane'; src: url('https://fonts.cdnfonts.com/css/br-cobane') format('woff2'); }
+    :root { --primary: #1877f2; --bg: #f0f2f5; --card: #fff; --text: #050505; }
+    body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+    .app-container { max-width: 1300px; margin: 0 auto; }
+    .header { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { margin: 0; font-size: 24px; color: var(--primary); }
+    .back-link { text-decoration: none; color: #555; font-size: 14px; font-weight: 500; }
+    .split-layout { display: grid; grid-template-columns: 1fr 550px; gap: 30px; align-items: start; }
+    @media (max-width: 1000px) { .split-layout { grid-template-columns: 1fr; } }
+    .card-box { background: var(--card); padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+    .form-group { flex: 1; margin-bottom: 15px; }
+    label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #4b4f56; }
+    label span.req { color: red; }
+    .help-text { font-size: 11px; color: #666; margin-top: 3px; font-style: italic; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    button.submit-btn { width: 100%; padding: 12px; background: #ff9800; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .card-preview { background: #fff; border-radius: 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); border: 1px solid #e0e0e0; max-width: 600px; margin: 0 auto; color: #545454; font-size: 14px; overflow: hidden; display:flex; flex-direction:column; position:relative; }
+    .card-main-section { display: flex; padding: 20px; gap: 20px; }
+    .card-left-col { width: 120px; border-right: 1px solid #eee; padding-right: 20px; flex-shrink: 0; display:flex; flex-direction:column; justify-content:space-between; }
+    .card-logo { width: 120px; background-color: #f0f0f0; }
+    .side-details { display: flex; align-items: center; gap: 10px; text-align: center; }
+    .side-details.center-qr { justify-content: center; }
+    .years { font-weight: 700; color: #efad00; display:none; }
+    .years-lg { font-family: 'ChunkFiveEx', sans-serif; font-size: 36.5pt; line-height: 1; }
+    .years-sm { font-size: 0.9em; letter-spacing: 1px; }
+    .since { font-family: 'BR Cobane', sans-serif; font-size: 7.87pt; letter-spacing: 0.5px; opacity: 0.8; color: #efad00; font-weight: normal; }
+    .qr-code { width: 60px; height: 60px; background-color: #f0f0f0; }
+    .card-right-col { flex-grow: 1; color: #545454; }
+    .name, .company { font-size: 14px; font-weight: 700; margin: 0 0 5px 0; }
+    .position { font-size: 14px; font-weight: normal; margin: 0 0 15px 0; white-space: pre-line; }
+    .address { font-size: 12px; margin: 0 0 15px 0; line-height: 1.4; white-space: pre-wrap; }
+    .contact-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 12px; }
+    .contact-item svg { width: 16px; height: 16px; margin-right: 10px; fill: #545454; flex-shrink: 0; }
+    .card-footer { text-align: right; padding: 10px 20px; margin: 15px 0 0; border-top: 8px solid #1b449c; font-size: 12px; font-weight: bold; color: #1b449c; }
+    .audit-card { margin-top: 20px; border-top: 4px solid #ff9800; }
+    .audit-header { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .audit-list { max-height: 400px; overflow-y: auto; background: #fff; }
+    .audit-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .audit-time { min-width: 120px; font-size: 11px; color: #888; text-align: right; line-height: 1.4; }
+    .audit-content { flex: 1; font-size: 13px; color: #333; }
+    .audit-user { font-weight: bold; color: #1877f2; margin-bottom: 2px; font-size: 12px; }
+    .audit-comment-box { background-color: #fff8e1; border-left: 3px solid #ffc107; padding: 8px 12px; border-radius: 4px; margin-top: 5px; color: #5d4037; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <h1>Edit Request: <span id="displayReqId">Loading...</span></h1>
+      <a href="<?= ScriptApp.getService().getUrl() ?>" class="back-link">&larr; Back to Portal</a>
+    </div>
+
+    <div class="split-layout">
+      <div class="card-box">
+        <form id="requestForm">
+            <input type="hidden" id="requestID" name="requestID" value="<?= data.requestId ?>">
+            
+            <div class="form-row">
+              <div class="form-group"><label>Requestor Name</label><input type="text" id="requestorName" name="requestorName" required></div>
+              <div class="form-group"><label>Requestor Email</label><input type="email" id="requestorEmail" name="requestorEmail" required readonly></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Card Name <span class="req">*</span></label><input type="text" id="cardName" name="cardName" required onkeyup="updatePreview(); syncName()"></div>
+              <div class="form-group"><label>Position / Title <span class="req">*</span></label><input type="text" id="position" name="position" required onkeyup="updatePreview()"></div>
+            </div>
+            <div class="form-group"><label>Employee Full Name (Record)</label><input type="text" id="fullName" name="fullName" required></div>
+            <div class="form-row">
+               <div class="form-group"><label>Department <span class="req">*</span></label><input type="text" id="department" name="department" required onkeyup="updatePreview()"></div>
+               <div class="form-group"><label>Employee Email <span class="req">*</span></label><input type="email" id="email" name="email" required onkeyup="updatePreview()"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Telephone <span class="req">*</span></label><input type="text" id="telephone" name="telephone" placeholder="(+63-XX) XXXX XX XX" required onkeyup="updatePreview()"><div class="help-text">Format: (+63-XX) XXXX XX XX</div></div>
+              <div class="form-group"><label>Local or Extension (Optional)</label><input type="text" id="localNumber" name="localNumber" placeholder="123" onkeyup="updatePreview()"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Cellphone <span class="req">*</span></label><input type="text" id="cellphone" name="cellphone" placeholder="(+63) XXX XXX XXXX" required onkeyup="updatePreview()"><div class="help-text">Format: (+63) XXX XXX XXXX</div></div>
+              <div class="form-group"><label>Website</label><input type="text" id="website" name="website" onkeyup="updatePreview()"></div>
+            </div>
+            <div class="form-group"><label>Company <span class="req">*</span></label><select id="companyName" name="companyName" required onchange="handleCompanyChange(this.value)"></select></div>
+            <div class="form-group"><label>Address <span class="req">*</span></label><select id="companyAddress" name="companyAddress" required onchange="updatePreview()" disabled></select></div>
+            <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="includeYears" name="includeYears" style="width:auto" onchange="updatePreview()"> Include "Years" Emblem</label></div>
+            
+            <div class="form-group" style="margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+                <label>Reason for Request <span class="req">*</span></label>
+                <textarea id="requestReason" name="requestReason" rows="2" placeholder="e.g., Correction of details..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Update & Resubmit</button>
+        </form>
+      </div>
+
+      <div>
+        <div style="position: sticky; top: 20px;">
+          <h3 style="margin-top:0; color:#65676b;">Live Preview</h3>
+          <div class="card-preview">
+            <div class="card-main-section">
+              <div class="card-left-col">
+                <img id="company-logo" class="card-logo" src="" alt="Logo">
+                <div class="side-details center-qr">
+                  <div class="years"><div class="years-lg">57</div><div class="years-sm">YEARS</div><div class="since">SINCE 1968</div></div>
+                  <img id="qr-code-img" class="qr-code" src="" alt="QR">
+                </div>
+              </div>
+              <div class="card-right-col">
+                <h3 class="name" id="preview-name">Maria Clara</h3>
+                <p class="position" id="preview-position">Director</p>
+                <p class="company" id="preview-company"></p>
+                <p class="address" id="preview-address"></p>
+                <div class="contact-details">
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"></path></svg><span id="preview-tel"></span></div>
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M17,19H7V5H17M17,3H7A2,2 0 0,0 5,5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V5A2,2 0 0,0 17,3M16,13H8V11H16V13Z"></path></svg><span id="preview-cell"></span></div>
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path></svg><span id="preview-email"></span></div>
+                  <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A1,1 0 0,0 10,17H14A1,1 0 0,0 15,16V15L19.79,10.21C19.92,10.78 20,11.38 20,12C20,16.08 16.95,19.44 13,19.93V17H11V19.93M12.5,14H11.5V12.5H10V11.5H11.5V10H12.5V11.5H14V12.5H12.5V14M12,4.07C15.95,4.56 19,7.92 19,12C19,12.62 18.92,13.22 18.79,13.79L14,9V8A1,1 0 0,0 13,7H9A1,1 0 0,0 8,8V9L4.21,13.79C4.08,13.22 4,12.62 4,12C4,7.92 7.05,4.56 11,4.07V7H13V4.07Z"></path></svg><span id="preview-web"></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">Uratex Group of Companies</div>
+          </div>
+
+          <div class="card-box audit-card">
+             <div class="audit-header">Approval & Change History</div>
+             <div class="audit-list" id="auditList"><div style="text-align:center; padding:20px; color:#999;">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const reqId = document.getElementById('requestID').value;
+    document.addEventListener('DOMContentLoaded', () => {
+       document.getElementById('displayReqId').textContent = reqId;
+       google.script.run.withSuccessHandler(d => document.getElementById('company-logo').src = d).getLogoAsBase64();
+       google.script.run.withSuccessHandler(d => document.getElementById('qr-code-img').src = d).getQrCodeAsBase64();
+       google.script.run.withSuccessHandler(list => {
+          const s = document.getElementById('companyName');
+          s.innerHTML = '<option disabled selected>Select Company</option>';
+          list.forEach(c => s.innerHTML += `<option value="${c}">${c}</option>`);
+          loadRequestData();
+       }).getCompanyList();
+       loadHistory();
+    });
+
+    function loadRequestData() {
+       google.script.run.withSuccessHandler(req => {
+          if(!req) { alert('Request not found.'); return; }
+          document.getElementById('requestorName').value = req.requestorName;
+          document.getElementById('requestorEmail').value = req.requestorEmail;
+          document.getElementById('cardName').value = req.cardName;
+          document.getElementById('fullName').value = req.fullName;
+          document.getElementById('position').value = req.position;
+          document.getElementById('department').value = req.department;
+          document.getElementById('telephone').value = req.telephone;
+          document.getElementById('localNumber').value = req.localNumber;
+          document.getElementById('cellphone').value = req.cellphone;
+          document.getElementById('email').value = req.email;
+          document.getElementById('website').value = req.website;
+          document.getElementById('includeYears').checked = req.includeYears;
+          document.getElementById('requestReason').value = req.requestReason || '';
+          document.getElementById('companyName').value = req.companyName;
+          google.script.run.withSuccessHandler(addrs => {
+             const s = document.getElementById('companyAddress');
+             s.innerHTML = '';
+             addrs.forEach(a => s.innerHTML += `<option value="${a} Philippines">${a} Philippines</option>`);
+             s.value = req.companyAddress;
+             s.disabled = false;
+             updatePreview();
+          }).getAddressesForCompany(req.companyName);
+       }).getRequestById(reqId);
+    }
+
+    function loadHistory() {
+       google.script.run.withSuccessHandler(logs => {
+          const div = document.getElementById('auditList');
+          if(!logs || logs.length === 0) { div.innerHTML = '<div style="padding:15px; text-align:center; color:#999;">No history available.</div>'; return; }
+          div.innerHTML = logs.map(l => {
+             let contentHtml = '';
+             if (l.action === 'Comment' || l.field === 'Reason') contentHtml = `<div class="audit-comment-box">"${l.newVal}"</div>`;
+             else contentHtml = `<div class="audit-action"><strong>${l.action}</strong> ${l.field ? `<span>(${l.field})</span>` : ''}</div>${l.newVal ? `<div>${l.oldVal ? `<strike style="color:#999">${l.oldVal}</strike> &rarr; ` : ''} ${l.newVal}</div>` : ''}`;
+             return `<div class="audit-item"><div class="audit-time">${l.timestamp}</div><div class="audit-content"><div class="audit-user">${l.user}</div>${contentHtml}</div></div>`;
+          }).join('');
+       }).getHistory(reqId);
+    }
+
+    function updatePreview() {
+       const val = (id) => document.getElementById(id).value;
+       document.getElementById('preview-name').textContent = val('cardName') || 'Maria Clara';
+       document.getElementById('preview-position').textContent = val('position') + '\n' + val('department');
+       document.getElementById('preview-company').textContent = val('companyName');
+       document.getElementById('preview-address').textContent = val('companyAddress');
+       let t = val('telephone'); if(val('localNumber')) t += ' loc ' + val('localNumber');
+       document.getElementById('preview-tel').textContent = t;
+       document.getElementById('preview-cell').textContent = val('cellphone');
+       document.getElementById('preview-email').textContent = val('email');
+       document.getElementById('preview-web').textContent = val('website');
+       const years = document.getElementById('includeYears').checked;
+       document.querySelector('.years').style.display = years ? 'block' : 'none';
+       document.querySelector('.side-details').classList.toggle('center-qr', !years);
+    }
+
+    function syncName() { document.getElementById('fullName').value = document.getElementById('cardName').value; }
+    function handleCompanyChange(v) {
+       const s = document.getElementById('companyAddress'); s.innerHTML='<option>Loading...</option>';
+       google.script.run.withSuccessHandler(a => {
+          s.innerHTML=''; a.forEach(x => s.innerHTML+=`<option value="${x} Philippines">${x} Philippines</option>`);
+          s.disabled=false; updatePreview();
+       }).getAddressesForCompany(v);
+    }
+
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+       e.preventDefault();
+       const btn = document.getElementById('submitBtn'); 
+       btn.textContent='Updating...'; 
+       btn.disabled=true;
+       
+       // CRITICAL: Enable address so it gets included
+       document.getElementById('companyAddress').disabled = false;
+
+       const data = {}; 
+       new FormData(this).forEach((v,k)=>data[k]=v);
+       data.includeYears = document.getElementById('includeYears').checked;
+       
+       google.script.run
+         .withSuccessHandler(r => {
+            alert(r.message);
+            if(r.success) {
+               // USE URL FROM BACKEND
+               window.top.location.href = r.redirectUrl; 
+            } else { 
+               // RESET BUTTON ON ERROR
+               btn.textContent = 'Update & Resubmit';
+               btn.disabled = false;
+            }
+         })
+         .withFailureHandler(err => {
+            alert('Error: ' + err.message);
+            btn.textContent = 'Update & Resubmit';
+            btn.disabled = false;
+         })
+         .processForm(data);
+    });
+  </script>
+</body>
+</html>
